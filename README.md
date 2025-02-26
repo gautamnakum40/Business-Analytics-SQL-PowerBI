@@ -47,3 +47,30 @@ This dataset represents **real commercial transactions** but has been anonymized
   - **Git & GitHub**: Used for version control, project tracking, and sharing SQL queries. Git LFS is implemented to handle large CSV files in the dataset.
     
   - **Power BI**: All data visualizations, including interactive dashboards and analytical reports, are built in Power BI to present insights effectively.
+
+## Database Design and Importing Data
+
+### Data Schema
+
+A Star Data Schema is provided by Olist.
+
+![Data schema](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Data%20Schema.png)
+
+I used this Data Schema to understand the dataset structure and determine the sequence for creating tables and importing data. Based on this analysis, the following sequence ensures proper relational integrity:
+
+Geolocation → Customers/Sellers → Orders → Payments/Reviews → Product Name Translation → Products → Order Items 
+
+'→' : indicate the sequence
+'/' : indicate that either table can be created first
+
+You can check out the SQL files for creating tables and importing Olist data in sequence from : [Setup Folder](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/tree/master/Setup)
+
+### Table Creation & Data load :
+
+#### 1. Table Olist_geolocation
+
+
+
+
+
+

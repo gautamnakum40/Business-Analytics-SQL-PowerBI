@@ -27,4 +27,23 @@ After successful data ingestion, SQL queries are used to conduct in-depth Explor
 
 The Power BI Dashboard aims to provide an interactive and visually compelling analysis of the Olist e-commerce dataset, enabling data-driven decision-making.
 
-  
+
+## Dataset
+
+This dataset, provided by Olist, is available for download on [Kaggle](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) and consists of 9 CSV files stored in the [Dataset folder](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/tree/master/Dataset).
+
+The dataset contains **100K E-commerce orders** from **2016 to 2018**, spanning multiple Brazilian marketplaces. It provides a **comprehensive view of each order, covering order status, pricing, payments, freight details, customer demographics, product attributes, and customer reviews.** Additionally, a **geolocation dataset** maps Brazilian zip codes to latitude and longitude coordinates.
+
+This dataset represents **real commercial transactions** but has been anonymized for privacy. Any references to companies and partners in the review text have been replaced with the names of **Game of Thrones great houses.**
+
+## Tools I Used
+
+  - **SQL**: The core of this project, used for data import, transformation, and exploratory data analysis (EDA).
+    
+  - **Postgresql**: The database management system ideal for handling the Olist dataset.
+    
+  - **Visual Studio Code (VS Code)**: The preferred Integrated Development Environment (IDE) for managing databases and executing SQL queries.
+    
+  - **Git & GitHub**: Used for version control, project tracking, and sharing SQL queries. Git LFS is implemented to handle large CSV files in the dataset.
+    
+  - **Power BI**: All data visualizations, including interactive dashboards and analytical reports, are built in Power BI to present insights effectively.

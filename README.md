@@ -496,6 +496,101 @@ Questions to be answer for this analysis are as follows:
    5. Find out count of all reviews scores and the avergae review score per delivery?
    6. Find the relation between delivery time and review score?
 
+#### 1. Find the avergare time it takes for the after the puchase for the payment to be approved?
+
+```sql
+
+select MAX(order_approved_at - order_purchase_timestamp) as maxtime_approval FROM olist_orders
+where order_status='delivered'
+;
+
+select MIN(order_approved_at - order_purchase_timestamp) as mintime_approval FROM olist_orders
+where order_status='delivered'
+;
+
+-- we see 0 as result because there are orders when the purchase was approved at the same time
+
+select * from olist_orders
+where order_approved_at = order_purchase_timestamp;
+
+select AVG(order_approved_at - order_purchase_timestamp) as avgtime_approval FROM olist_orders
+where order_status='delivered'
+;
+```
+
+Output
+
+For Max
+
+```{ "days": 30, "hours": 21, "minutes": 26, "seconds": 37}```
+
+For Min
+
+``` {} ```
+
+> Insight : The MIN value is 0 because purchase time and order time is same for some orders.
+
+For Avg
+
+``` { "hours": 10, "minutes": 16, "seconds": 36, "milliseconds": 361.244} ```
+
+> Insight : On average it took 10hrs and 16 minutes for the payment bee approved after the purchase was made by the customer.
+
+#### 2. FInd out the fastest and the slowest delivery days or time?
+
+```sql
+-- For Slowest
+
+select max(order_delivered_customer_date - order_purchase_timestamp) as slowest_delivery from olist_orders
+where order_status= 'delivered'
+;
+
+-- For fastest
+
+select min(order_delivered_customer_date - order_purchase_timestamp) as fastest_delivery from olist_orders
+where order_status= 'delivered'
+;
+
+-- For Avg
+
+select avg(order_delivered_customer_date - order_purchase_timestamp) as average_delivery from olist_orders
+where order_status= 'delivered'
+;
+```
+
+Output 
+
+For Slowest
+``` {"days": 209,"hours": 15,"minutes": 5,"seconds": 12}```
+
+> Insight : the slowest delivery took 209 days to deliver
+
+For Fastest
+``` {"hours": 12, "minutes": 48,"seconds": 7} ```
+
+> Insight : observation fastest delivery time is 12 hours
+
+#### 3.  Find out the average devlivery time or days ?
+
+```sql
+-- For Avg
+select avg(order_delivered_customer_date - order_purchase_timestamp) as average_delivery from olist_orders
+where order_status= 'delivered'
+;
+```
+
+Output 
+
+``` {"days": 12, "hours": 13, "minutes": 23, "seconds": 49, "milliseconds": 957.272 }```
+
+> Insight : average delivery time is 12 days and 13 hours
+
+
+
+
+
+
+
 
 
 

@@ -69,6 +69,528 @@ You can check out the SQL files for creating tables and importing Olist data in 
 
 #### 1. Table Olist_geolocation
 
+This table cannot have ```zip_code_prefix``` as the primary key because there are duplicate values. A particular zip code can have multiple coordinates where orders could have been delivered. Due to this, the table cannot connect to other tables until this issue is resolved. Since it lacks a connection, I can create this table first.
+
+```Sql
+
+drop table if exists public.olist_geolocation;
+
+/* create table olist_geolocation table with no primary key
+ because zip code prefix has duplicate values.
+Also this table cannot be joined with olist_seller or olist_customers table 
+through zip code prefix because it has duplicate values */
+
+create table public.olist_geolocation
+(
+    geolocation_zip_code_prefix int,
+    geoloacation_lat float,
+    geolocation_lng float,
+    geolocation_city varchar(100),
+    geolocation_state char(2)
+    
+);
+
+-- import data from csv files to table :
+
+copy public.olist_geolocation
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_geolocation_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 2. Table Olist_sellers
+
+This table has seller_id as the primary key and has 3095 values.
+
+```sql
+
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if exists public.olist_seller;
+
+--create table Olist_seller table with primary key 
+
+create table public.olist_seller 
+(
+    seller_id varchar(100) primary key,
+    seller_zip_code_prefix int,
+    seller_city varchar(100),
+    seller_state char(2)
+);
+
+-- import data from csv files to table :
+
+copy public.Olist_seller
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_sellers_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 3. Table Olist_Customers
+
+The primary key for this table is Customer_ID and it has 99441 values.
+
+```sql
+
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if exists public.olist_customers;
+
+--create table olist_Customers with primary key 
+
+create table public.olist_Customers
+(
+    customer_id varchar(100) primary key,
+    customer_unique_id varchar(100),
+    customer_zip_code_prefix int,
+    customer_city varchar(100),
+    customer_state char(2)
+);
+
+-- import data from csv files to table :
+
+copy public.olist_Customers
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_customers_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 4. Table Olist_Order
+
+This table has order_id as primary key and customer_id as foreign key.
+
+```sql
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if EXISTS public.olist_orders;
+
+--create table olist_orders table with primary key and foreign key
+
+create table public.olist_orders  
+(
+    order_id varchar(100) primary key,
+    customer_id varchar(100),
+    order_status varchar(100), 
+    order_purchase_timestamp TIMESTAMP without time zone,
+    order_approved_at TIMESTAMP without time zone,
+    order_delivered_carrier_date TIMESTAMP without time zone,
+    order_delivered_customer_date TIMESTAMP without time zone,
+    order_estimated_delivery_date TIMESTAMP without time zone,
+    foreign key(customer_id) references olist_Customers(customer_id)
+);
+
+-- import data from csv files to table :
+
+copy public.olist_orders
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_orders_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 5. Table Olist_Order_reviews
+
+This table has order_id as foreign key.
+
+```sql
+
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if EXISTS public.olist_order_reviews;
+
+/* create table olist_order_review with foreign key
+review_id and order_id has duplicate values so it cannot be primary key
+*/
+
+create table public.olist_order_reviews
+(
+    review_id VARCHAR(100),
+    order_id varchar(100),
+    review_score int,
+    review_comment_title varchar(255),
+    review_comment_message text,
+    review_creation_date TIMESTAMP without time zone,
+    review_answer_timestamp TIMESTAMP without time zone,
+    foreign key (order_id) references olist_orders(order_id)
+);
+
+-- import data from csv files to table :
+
+  copy public.olist_order_reviews
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_order_reviews_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 6. Table Olist_Order_payments
+
+This table has order_id as foreign key.
+
+```sql
+
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if EXISTS public.olist_order_payments;
+
+--create table olist_order_payments with foreign key
+
+create table public.olist_order_payments 
+(
+    order_id varchar(100),
+    payment_sequential int,
+    payment_type varchar(100),
+    payment_installments int,
+    payment_value numeric(10,2),
+    foreign key(order_id) references olist_orders(order_id)
+);
+
+-- import data from csv files to table :
+
+copy public.olist_order_payments
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_order_payments_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 7. Table Olist_product_name_translation
+
+This table has Product_category_name as the primary key which has 73 values.
+
+```sql
+
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if exists public.olist_product_name_translation;
+
+--create table olist_product_name_translation with primary key
+
+create table public.olist_product_name_translation
+(
+    product_category_name varchar(100) primary key,
+    product_category_name_english varchar(100)
+);
+
+-- I Manually Translate columns names into English in .csv file.
+-- import data from csv files to table :
+
+copy public.olist_product_name_translation
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\product_category_name_translation.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 8. Table Olist_products
+
+This table has product_id as primary key with values 32951 and product_category_name as foreign key.
+
+```sql
+
+--drop table if already exist to ensure multiple runs and clean slate
+
+drop table if EXISTS public.olist_products;
+
+-- create table olist_products with pimary key and foreign key
+
+create table public.olist_products
+(
+    product_id varchar(100) primary key,
+    product_category_name varchar(100),
+    product_name_lenght int,
+    product_description_lenght int,
+    product_photos_qty int,
+    product_weight_g int,
+    product_length_cm int,
+    product_height_cm int,
+    product_width_cm int,
+    foreign key (product_category_name) references olist_product_name_translation(product_category_name)
+);
+
+-- import data from csv files to table :
+
+copy public.olist_products
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_products_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+#### 9. Table Olist_order_items
+
+This is the last table to be creted as it has relations with three tables with order_id, seller_id and Product_id as its foreign keys
+
+```sql
+
+drop table if exists public.olist_order_items;
+
+-- create table olist_order_items with primary key and foreign keys
+
+create table public.olist_order_items
+(
+    order_id VARCHAR(100),
+    order_item_id int,
+    product_id VARCHAR(100),
+    seller_id VARCHAR(100),
+    shipping_limit_date TIMESTAMP without time zone,
+    price numeric(10,2),
+    freight_value numeric(10,2),
+    foreign key (order_id) references olist_orders(order_id),
+    foreign key (product_id) references olist_products(product_id),
+    foreign key (seller_id) references olist_seller(seller_id)
+);
+
+-- import data from csv files to table :
+
+copy public.olist_order_items
+from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_order_items_dataset.csv'
+WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
+```
+
+
+## Entity Relationship Diagram (ERD)
+
+This diagram illustrates the relationships between all the tables I have created.
+
+![ERD Diagram](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/ERD.png)
+
+## Exploratory Data Analysis (EDA)
+
+The second objective is to perform Exploratory Data Analysis (EDA) to uncover valuable insights. The analysis is divided into three different approaches based on the data, providing a comprehensive understanding of the overall e-commerce business.
+
+   - Customer and Seller Analysis [SQL File](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/EDA_SQL/Customer%26Seller_analysis.sql)
+   - Delivery and Review Analysis [SQL File](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/EDA_SQL/Delivery%26Review_analysis.sql)
+   - Sales and Revenue Analysis [SQL File](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/EDA_SQL/Sales%26Revenue_analysis.sql)
+
+### **Customer and Seller Analysis**
+
+Questions to be answer for this analysis are as follows:
+
+  1. What are the top 10 cities with most customers?
+  2. What are the top 10 states with most customers?
+  3. Find what top 10 cities come under what states?
+  4. What are the top 10 cities with most selles?
+  5. What are the top 10 states with most selles?
+  6. Find what top 10 cities come under what states?
+  7. Is there any relation between the geography of customers and sellers?
+
+#### 1. What are the top 10 cities with most customers?
+
+```sql
+--we will use customer unique id because we want to get total unique customers
+
+select customer_city, count(customer_unique_id) as number_customers
+from olist_customers
+group by customer_city
+order by number_customers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20customers.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20customers.png)
+
+Insights
+
+Sao Paulo has the largert customer base for Olist.
+
+#### 2. What are the top 10 states with most customers?
+
+```sql
+select customer_state, count(customer_unique_id) as number_customers
+from olist_customers
+group by customer_state
+order by number_customers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20customers.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20customers.png)
+
+Insights
+
+State of São Paulo has the largert customer base for Olist.
+
+#### 3. Find what top 10 cities come under what states?
+
+```sql
+with topcities_cust AS
+(SELECT customer_state, customer_city, count(customer_unique_id) as number_customers,
+row_number() over (ORDER BY count(customer_unique_id) desc) as row_num
+from olist_customers
+group by customer_city,customer_state
+)
+select customer_state, customer_city, number_customers
+from topcities_cust
+where row_num<=10
+ORDER BY customer_state, number_customers desc;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Customer%20distribution%20bt%20state%20and%20city.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Customer%20distribution%20bt%20state%20and%20city.png)
+
+Insights
+
+State of São Paulo has the 4 cities which have largest customer base for Olist.
+
+#### 4. What are the top 10 cities with most selles?
+
+```sql
+select seller_city, count(seller_id) as number_sellers
+from olist_seller
+group by seller_city
+order by number_sellers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20selles.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20selles.png)
+
+Insights
+
+São Paulo has the most number of sellers for Olist.
+
+#### 5. What are the top 10 states with most selles?
+
+```sql
+select seller_state, count(seller_id) as number_sellers
+from olist_seller
+group by seller_state
+order by number_sellers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20selles.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20selles.png)
+
+Insights
+
+São Paulo has the most number of sellers for Olist.
+
+#### 6. Find what top 10 cities come under what states?
+
+```sql
+with topcities_seller AS
+(SELECT seller_state, seller_city, count(seller_id) as number_sellers,
+row_number() over (ORDER BY count(seller_id) desc) as row_num
+from olist_seller
+group by seller_city,seller_state
+)
+select seller_state, seller_city, number_sellers
+from topcities_seller
+where row_num<=10
+ORDER BY seller_state, number_sellers desc;
+
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Seller%20distisbution%20by%20states.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Seller%20distisbution%20by%20states.png)
+
+Insights
+
+60% of the top 10 sellers are from the State of Sao Paulo.
+
+Also from the visualizations it is clear that State of Sao Paulo and city of Sao Pualo has the largest customer and seller base. For further analysis I could use the geolocation table but due to prefix zip code dupliaction avoiding it.
+
+### **Delivery and Review Analysis**
+
+Questions to be answer for this analysis are as follows:
+
+   1. Find the avergare time it takes for the after the puchase for the payment to be approved?
+   2. Find out the fastest and the slowest delivery days or time?
+   3. Find out the average devlivery time or days ?
+   4. Find the average, max, min difference between the actual delivery and estimated delivery?
+   5. Find out count of all reviews scores and the avergae review score per delivery?
+   6. Find the relation between delivery time and review score?
+
+#### 1. Find the avergare time it takes for the after the puchase for the payment to be approved?
+
+```sql
+
+select MAX(order_approved_at - order_purchase_timestamp) as maxtime_approval FROM olist_orders
+where order_status='delivered'
+;
+
+select MIN(order_approved_at - order_purchase_timestamp) as mintime_approval FROM olist_orders
+where order_status='delivered'
+;
+
+-- we see 0 as result because there are orders when the purchase was approved at the same time
+
+select * from olist_orders
+where order_approved_at = order_purchase_timestamp;
+
+select AVG(order_approved_at - order_purchase_timestamp) as avgtime_approval FROM olist_orders
+where order_status='delivered'
+;
+```
+
+Output
+
+For Max
+
+```{ "days": 30, "hours": 21, "minutes": 26, "seconds": 37}```
+
+For Min
+
+``` {} ```
+
+> Insight : The MIN value is 0 because purchase time and order time is same for some orders.
+
+For Avg
+
+``` { "hours": 10, "minutes": 16, "seconds": 36, "milliseconds": 361.244} ```
+
+> Insight : On average it took 10hrs and 16 minutes for the payment bee approved after the purchase was made by the customer.
+
+#### 2. FInd out the fastest and the slowest delivery days or time?
+
+```sql
+-- For Slowest
+
+select max(order_delivered_customer_date - order_purchase_timestamp) as slowest_delivery from olist_orders
+where order_status= 'delivered'
+;
+
+-- For fastest
+
+select min(order_delivered_customer_date - order_purchase_timestamp) as fastest_delivery from olist_orders
+where order_status= 'delivered'
+;
+
+-- For Avg
+
+select avg(order_delivered_customer_date - order_purchase_timestamp) as average_delivery from olist_orders
+where order_status= 'delivered'
+;
+```
+
+Output 
+
+For Slowest
+
+``` {"days": 209,"hours": 15,"minutes": 5,"seconds": 12}```
+
+> Insight : the slowest delivery took 209 days to deliver
+
+For Fastest
+
+``` {"hours": 12, "minutes": 48,"seconds": 7} ```
+
+> Insight : observation fastest delivery time is 12 hours
+
+#### 3.  Find out the average devlivery time or days ?
+
+```sql
+-- For Avg
+select avg(order_delivered_customer_date - order_purchase_timestamp) as average_delivery from olist_orders
+where order_status= 'delivered'
+;
+```
+
+Output 
+
+``` {"days": 12, "hours": 13, "minutes": 23, "seconds": 49, "milliseconds": 957.272 }```
+
+> Insight : average delivery time is 12 days and 13 hours
+
+
+
+
+
 
 
 

@@ -459,10 +459,42 @@ Insights
 
 São Paulo has the most number of sellers for Olist.
 
+#### 6. Find what top 10 cities come under what states?
 
+```sql
+with topcities_seller AS
+(SELECT seller_state, seller_city, count(seller_id) as number_sellers,
+row_number() over (ORDER BY count(seller_id) desc) as row_num
+from olist_seller
+group by seller_city,seller_state
+)
+select seller_state, seller_city, number_sellers
+from topcities_seller
+where row_num<=10
+ORDER BY seller_state, number_sellers desc;
 
+```
 
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Seller%20distisbution%20by%20states.png)
 
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Seller%20distisbution%20by%20states.png)
+
+Insights
+
+60% of the top 10 sellers are from the State of Sao Paulo.
+
+Also from the visualizations it is clear that State of Sao Paulo and city of Sao Pualo has the largest customer and seller base. For further analysis I could use the geolocation table but due to prefix zip code dupliaction avoiding it.
+
+### **Delivery and Review Analysis**
+
+Questions to be answer for this analysis are as follows:
+
+   1. Find the avergare time it takes for the after the puchase for the payment to be approved?
+   2. Find out the fastest and the slowest delivery days or time?
+   3. Find out the average devlivery time or days ?
+   4. Find the average, max, min difference between the actual delivery and estimated delivery?
+   5. Find out count of all reviews scores and the avergae review score per delivery?
+   6. Find the relation between delivery time and review score?
 
 
 

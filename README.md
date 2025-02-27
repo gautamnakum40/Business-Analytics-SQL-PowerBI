@@ -561,11 +561,13 @@ where order_status= 'delivered'
 Output 
 
 For Slowest
+
 ``` {"days": 209,"hours": 15,"minutes": 5,"seconds": 12}```
 
 > Insight : the slowest delivery took 209 days to deliver
 
 For Fastest
+
 ``` {"hours": 12, "minutes": 48,"seconds": 7} ```
 
 > Insight : observation fastest delivery time is 12 hours

@@ -48,6 +48,22 @@ This dataset represents **real commercial transactions** but has been anonymized
     
   - **Power BI**: All data visualizations, including interactive dashboards and analytical reports, are built in Power BI to present insights effectively.
 
+## Skills Demonstrated
+
+  - **SQL**: Used Joins, CTEs, Subqueries, Group By, and Aggregate Functions for data analysis.
+    
+  - **PostgreSQL**: Designed a relational database with primary and foreign keys for data integrity.
+    
+  - **ETL**: Extracted data, transformed it using SQL, and loaded results into Power BI for visualization.
+    
+  - **Power BI**: Created interactive dashboards with area charts, bar charts, waterfall charts, heatmaps, and matrix tables.
+    
+  - **DAX & Time Intelligence**: Used DAX functions and calendar tables for advanced analytics.
+    
+  - **Git & GitHub**: Managed SQL scripts and Power BI files, using Git LFS for large datasets.
+    
+  - **Business Intelligence**: Analyzed customer behavior, sales trends, and seller performance for data-driven insights.
+ 
 ## Database Design and Importing Data
 
 ### Data Schema
@@ -958,14 +974,14 @@ After this part the data is available a form that can be used for exploratory da
 
 ## Key Insights from the Olist E-commerce Analysis
 
-### 1. Top-Performing Product Categories Drive Revenue
+**1. Top-Performing Product Categories Drive Revenue**
   - Certain product categories contribute significantly to total sales, indicating **high customer demand and profitability.**
 
-### 2. Delivery Speed Directly Impacts Customer Satisfaction
+**2. Delivery Speed Directly Impacts Customer Satisfaction**
   - Orders with faster delivery times tend to receive higher customer ratings, emphasizing the importance of logistics optimization.
 
-### 3. Seller Performance Influences Repeat Purchases
+**3. Seller Performance Influences Repeat Purchases**
   - **High-rated sellers** tend to have better sales consistency and repeat customers, highlighting the impact of **customer trust and service quality.**
 
-### 4. Review Sentiment Correlates with Product Quality & Service
+**4. Review Sentiment Correlates with Product Quality & Service**
   - Negative reviews often highlight issues in **product quality, delayed deliveries, or poor customer support**, serving as key areas for business improvement.

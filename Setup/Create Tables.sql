@@ -84,7 +84,7 @@ create table public.olist_order_reviews
     review_creation_date TIMESTAMP without time zone,
     review_answer_timestamp TIMESTAMP without time zone,
     foreign key (order_id) references olist_orders(order_id)
-)
+);
 
 --drop table if already exist to ensure multiple runs and clean slate
 
@@ -100,7 +100,7 @@ create table public.olist_order_payments
     payment_installments int,
     payment_value numeric(10,2),
     foreign key(order_id) references olist_orders(order_id)
-)
+);
 
 --drop table if already exist to ensure multiple runs and clean slate
 

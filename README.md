@@ -773,9 +773,147 @@ Output
 
 > Insight : if the product is delivered after 5 weeks the avg rating drops to 1.9
 
+### **Sales and Revenue Analysis**
 
+Questions to be answer for this analysis are as follows:
 
+  1. Find the top 10 categories whose avg products price is expensive? Also do find cheapest 10 ?
+  2. Find the top 10 most ordered product categories?
+  3. Find out the distribution of payment installments ?
+  4. Find the total orders yearly and monthly?
+  4. Find out the total sales revenue yearly and monthly?
+  6. Find out the average frieght paid by customers?
 
+#### 1. Find the top 10 categories whose avg products price is expensive? Also do find cheapest 10 ?
+
+-- Most Expensive Categories by average product price.
+
+```sql
+with exppd AS
+(
+select  pt.product_category_name, avg(oi.price) avg_price
+from olist_order_items oi join olist_products pt 
+on oi.product_id = pt.product_id
+group by pt.product_category_name
+order by avg_price DESC
+limit 10
+)
+select exppd.product_category_name, nt.product_category_name_english, exppd.avg_price avg_price
+from exppd join olist_product_name_translation nt 
+on exppd.product_category_name = nt.product_category_name
+order by avg_price desc;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Most%20Expensive%20Categories.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Most%20Expensive%20Categories.png)
+
+-- Least Expensive Categories by average product price.
+
+```sql
+with chpd AS
+(
+select pt.product_category_name, avg(oi.price) as avg_price
+from olist_order_items oi join olist_products pt 
+on oi.product_id = pt.product_id
+group by pt.product_category_name
+order by avg_price asc
+limit 10
+)
+select chpd.product_category_name, nt.product_category_name_english, chpd.avg_price avg_price
+from chpd join olist_product_name_translation nt 
+on chpd.product_category_name = nt.product_category_name
+order by avg_price asc;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Least%20Expensive%20Category.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Least%20Expensive%20Category.png)
+
+#### 2. Find the top 10 most ordered product categories?
+
+```sql
+with products_ordered as
+(
+select p.product_category_name, count(oi.product_id) productord
+from olist_order_items oi join olist_products p
+on oi.product_id = p.product_id
+group by p.product_category_name
+order by productord desc
+limit 10
+)
+
+select po.product_category_name, nt.product_category_name_english, po.productord
+from products_ordered po join olist_product_name_translation nt
+on po.product_category_name = nt.product_category_name
+order by po.productord desc
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/TOP%2010%20PRODUCTS%20ORDERED.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/TOP%2010%20PRODUCTS%20ORDERED.png)
+
+#### 3. Find out the distribution of payment installments ?
+
+```sql
+with num_count as
+(
+select payment_installments, count(order_id) num
+from olist_order_payments
+group by payment_installments
+order by payment_installments asc
+)
+,
+total as
+(
+select count(order_id) tot
+from olist_order_payments
+)
+select payment_installments, num, (num :: float / tot) * 100 as percentage
+from num_count, total
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/PAYMENT%20INSTALLMENTS%20DISTRIBUTION.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/PAYMENT%20INSTALLMENTS%20DISTRIBUTION.png)
+
+#### 4. Find the total orders yearly and monthly?
+
+```sql
+select  extract(month from order_purchase_timestamp) as month, extract(year from order_purchase_timestamp) as year, count(order_id) as total_orders
+from olist_orders
+group by  year, month
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Order%20Sales.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Order%20Sales.png)
+
+#### 5. Find out the total sales revenue yearly and monthly?
+
+```sql
+select sum(op.payment_value) as sales_revenue, extract(year from o.order_purchase_timestamp) as year, extract(month from o.order_purchase_timestamp) as month
+from olist_order_payments op join olist_orders o
+on op.order_id = o.order_id
+group by year, month
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Revenue.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Revenue.png)
+
+#### 6. Find out the average frieght paid by customers?
+
+```sql
+select avg(freight_value)
+from olist_order_items
+```
+
+Output
+
+```{"avg": "19.9903199289835775"}```
+
+> Insight : On average $19.9 frieght charges are there per order.
 
 
 

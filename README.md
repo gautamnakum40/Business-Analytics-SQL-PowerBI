@@ -415,5 +415,55 @@ where row_num<=10
 ORDER BY customer_state, number_customers desc;
 ```
 
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Customer%20distribution%20bt%20state%20and%20city.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Customer%20distribution%20bt%20state%20and%20city.png)
+
+Insights
+
+State of São Paulo has the 4 cities which have largest customer base for Olist.
+
+#### 4. What are the top 10 cities with most selles?
+
+```sql
+select seller_city, count(seller_id) as number_sellers
+from olist_seller
+group by seller_city
+order by number_sellers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20selles.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20selles.png)
+
+Insights
+
+São Paulo has the most number of sellers for Olist.
+
+#### 5. What are the top 10 states with most selles?
+
+```sql
+select seller_state, count(seller_id) as number_sellers
+from olist_seller
+group by seller_state
+order by number_sellers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20selles.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20selles.png)
+
+Insights
+
+São Paulo has the most number of sellers for Olist.
+
+
+
+
+
+
+
 
 

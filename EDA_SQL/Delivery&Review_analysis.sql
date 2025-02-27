@@ -68,7 +68,7 @@ order by fastest_delivery asc
 limit 1
 ;
 
-
+    
 
 --3. Find out the average devlivery time or days ?
 

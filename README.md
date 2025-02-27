@@ -48,6 +48,22 @@ This dataset represents **real commercial transactions** but has been anonymized
     
   - **Power BI**: All data visualizations, including interactive dashboards and analytical reports, are built in Power BI to present insights effectively.
 
+## Skills Demonstrated
+
+  - **SQL**: Used Joins, CTEs, Subqueries, Group By, and Aggregate Functions for data analysis.
+    
+  - **PostgreSQL**: Designed a relational database with primary and foreign keys for data integrity.
+    
+  - **ETL**: Extracted data, transformed it using SQL, and loaded results into Power BI for visualization.
+    
+  - **Power BI**: Created interactive dashboards with area charts, bar charts, waterfall charts, heatmaps, and matrix tables.
+    
+  - **DAX & Time Intelligence**: Used DAX functions and calendar tables for advanced analytics.
+    
+  - **Git & GitHub**: Managed SQL scripts and Power BI files, using Git LFS for large datasets.
+    
+  - **Business Intelligence**: Analyzed customer behavior, sales trends, and seller performance for data-driven insights.
+ 
 ## Database Design and Importing Data
 
 ### Data Schema
@@ -587,12 +603,385 @@ Output
 
 > Insight : average delivery time is 12 days and 13 hours
 
+#### 4. Find the average, max, min difference between the actual delivery and estimated delivery?
+
+``` sql
+-- For AVG
+
+select avg(order_estimated_delivery_date - order_delivered_customer_date) as average_discrepency from olist_orders
+where order_status= 'delivered'
+;
+
+-- For Max
+
+select max(order_estimated_delivery_date - order_delivered_customer_date) as max_discrepency from olist_orders
+where order_status= 'delivered'
+;
+
+- For MIN
+
+select min(order_estimated_delivery_date - order_delivered_customer_date) as min_discrepency from olist_orders
+where order_status= 'delivered'
+```
+
+Output 
+
+For AVG
+
+```{"days": 10,"hours": 28, "minutes": 16, "seconds": 30, "milliseconds": 62.973}```
+
+> Insight : On average product is delivered 10 days before the estimated delivery date.
+
+For Max
+
+```{"max_discrepency": { "days": 146,  "minutes": 23, "seconds": 13}}```
+
+> Insight : A product was delivered 146 days prior to the estimated delivery time.
+
+For MIN
+
+```{ "days": -188,"hours": -23, "minutes": -24,"seconds": -7}```
+
+> Insight : A product was delivered 6 months after the estimated delivery time. Negative days means the product was delivered after the estimated date of delivery.
+
+#### 5. Find out count of all reviews scores and the percentage of review score?
+
+```sql
+with starrating AS
+(
+select review_score, count(order_id) star_ratings from olist_order_reviews
+group by review_score
+order by star_ratings DESC
+)
+,
+total as 
+(
+select count(order_id) as total from olist_order_reviews
+)
+
+select review_score, star_ratings, (star_ratings::float / total) * 100 as percentage_stars
+from starrating, total;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Rating%20Analysis.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Rating%20Analysis.png)
+
+#### 6. Find the relation between delivery time and review score?
+
+-- Checking the Avg score if delivered within first two weeks
+
+```sql
+--find avg_rating we use cte inside cte
+
+
+with avgrating as
+(with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime < INTERVAL '14 days'
+)
+select avg(review_score) from avgrating
+```
+Output 
+
+```{ "avg": "4.3533371570018414"}```
+
+> Insight : f the product is delivered with in 2 weeks the avg rating is 4.35.
+
+-- Checking the Avg score if delivered between 2 and 3 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime between INTERVAL '14 days' and INTERVAL '21 days'
+)
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{ "avg": "4.1396386222473179"}```
+
+> Insight : if the product is delivered with in 2 weeks to 3 weeks the avg rating drops to 4.13.
+
+-- Checking the Avg score if delivered between 3 and 4 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime between INTERVAL '21 days' and INTERVAL '28 days'
+)
+
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{ "avg": "3.6899055918663762"}```
+
+> Insight : if the product is delivered with in 3 weeks to 4 weeks the avg rating drops to 3.6.
+
+-- Checking the Avg score if delivered between 4 and 5 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime  between INTERVAL '28 days' and INTERVAL '35 days'
+)
+
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{ "avg": "2.8450144508670520"}```
+
+> Insight : if the product is delivered with in 4 weeks to 5 weeks the avg rating drops to 2.8.
+
+-- Checking the Avg score if delivered after 5 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime > INTERVAL '35 days'
+
+)
+
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{"avg": "1.9714912280701754"}```
+
+> Insight : if the product is delivered after 5 weeks the avg rating drops to 1.9
+
+### **Sales and Revenue Analysis**
+
+Questions to be answer for this analysis are as follows:
+
+  1. Find the top 10 categories whose avg products price is expensive? Also do find cheapest 10 ?
+  2. Find the top 10 most ordered product categories?
+  3. Find out the distribution of payment installments ?
+  4. Find the total orders yearly and monthly?
+  4. Find out the total sales revenue yearly and monthly?
+  6. Find out the average frieght paid by customers?
+
+#### 1. Find the top 10 categories whose avg products price is expensive? Also do find cheapest 10 ?
+
+-- Most Expensive Categories by average product price.
+
+```sql
+with exppd AS
+(
+select  pt.product_category_name, avg(oi.price) avg_price
+from olist_order_items oi join olist_products pt 
+on oi.product_id = pt.product_id
+group by pt.product_category_name
+order by avg_price DESC
+limit 10
+)
+select exppd.product_category_name, nt.product_category_name_english, exppd.avg_price avg_price
+from exppd join olist_product_name_translation nt 
+on exppd.product_category_name = nt.product_category_name
+order by avg_price desc;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Most%20Expensive%20Categories.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Most%20Expensive%20Categories.png)
+
+-- Least Expensive Categories by average product price.
+
+```sql
+with chpd AS
+(
+select pt.product_category_name, avg(oi.price) as avg_price
+from olist_order_items oi join olist_products pt 
+on oi.product_id = pt.product_id
+group by pt.product_category_name
+order by avg_price asc
+limit 10
+)
+select chpd.product_category_name, nt.product_category_name_english, chpd.avg_price avg_price
+from chpd join olist_product_name_translation nt 
+on chpd.product_category_name = nt.product_category_name
+order by avg_price asc;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Least%20Expensive%20Category.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Least%20Expensive%20Category.png)
+
+#### 2. Find the top 10 most ordered product categories?
+
+```sql
+with products_ordered as
+(
+select p.product_category_name, count(oi.product_id) productord
+from olist_order_items oi join olist_products p
+on oi.product_id = p.product_id
+group by p.product_category_name
+order by productord desc
+limit 10
+)
+
+select po.product_category_name, nt.product_category_name_english, po.productord
+from products_ordered po join olist_product_name_translation nt
+on po.product_category_name = nt.product_category_name
+order by po.productord desc
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/TOP%2010%20PRODUCTS%20ORDERED.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/TOP%2010%20PRODUCTS%20ORDERED.png)
+
+#### 3. Find out the distribution of payment installments ?
+
+```sql
+with num_count as
+(
+select payment_installments, count(order_id) num
+from olist_order_payments
+group by payment_installments
+order by payment_installments asc
+)
+,
+total as
+(
+select count(order_id) tot
+from olist_order_payments
+)
+select payment_installments, num, (num :: float / tot) * 100 as percentage
+from num_count, total
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/PAYMENT%20INSTALLMENTS%20DISTRIBUTION.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/PAYMENT%20INSTALLMENTS%20DISTRIBUTION.png)
+
+#### 4. Find the total orders yearly and monthly?
+
+```sql
+select  extract(month from order_purchase_timestamp) as month, extract(year from order_purchase_timestamp) as year, count(order_id) as total_orders
+from olist_orders
+group by  year, month
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Order%20Sales.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Order%20Sales.png)
+
+#### 5. Find out the total sales revenue yearly and monthly?
+
+```sql
+select sum(op.payment_value) as sales_revenue, extract(year from o.order_purchase_timestamp) as year, extract(month from o.order_purchase_timestamp) as month
+from olist_order_payments op join olist_orders o
+on op.order_id = o.order_id
+group by year, month
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Revenue.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Yearly%20and%20Monthly%20Revenue.png)
+
+#### 6. Find out the average frieght paid by customers?
+
+```sql
+select avg(freight_value)
+from olist_order_items
+```
+
+Output
+
+```{"avg": "19.9903199289835775"}```
+
+> Insight : On average $19.9 frieght charges are there per order.
+
+###  Power BI Dashboard
+
+The Power BI Dashboard aims to provide an interactive and visually compelling analysis of the Olist e-commerce dataset, enabling data-driven decision-making.
 
 
 
+## Executive Summary
 
+### Database design and importing data
 
+This part of the project includes using the schema provide by the Olist dataset to establish the follwing tasks:
 
+  - Using the data in different csv files to import into seperate tables using the given schema.
+  - Creating tables in order so that these relationships can be established and data can be imported in a logical order.
+  - Asigning adequate data types such as int, numeeric, varchar, timestamp etc to the tables so that it is easies to perform functions usch as joins to the tables.
+  - Creating a Entity relationship diagram and then comparing it to the schema provided.
 
+After this part the data is available a form that can be used for exploratory data analysis.
 
+### Exploaratory Data Analysis(EDA)
 
+**This part of the project includes exploring the data using postgre and then visualizing it in PowerBI**.
+
+  - Gaining insights using questions for each segment of this analysis.
+  - Finding the different geographical distribution of customers and sellers.
+  - Analysing sales and revenue as well as product distribution. 
+  - Understanding the delivery timings and its effect on reviews.
+
+**Various SQL techniques are used in order to perform these analysis such as:**
+
+  - Joins are used for different tables to get required results.
+  - CTE common tabke expression is used for table manuplation.
+  - Aggregate functions used such as avg, max, min for analysis.
+  - Subqueries and Group By clauses used with other basic operations like to extract order and filter data.  
+
+**PowerBI for Visualization & Dashboard**
+
+   - Results from sql queries are stores as csv files and used for visualization.
+   - Diffferet charts such as area chart, bar chart, waterfall chart, heatmaps, Stacked area chart and table matrix  are used for interactive visualization.
+   - hese visualizations are integrated into a dynamic Power BI dashboard, providing an intuitive and interactive way to analyze key metrics and trends.
+
+## Key Insights from the Olist E-commerce Analysis
+
+**1. Top-Performing Product Categories Drive Revenue**
+  - Certain product categories contribute significantly to total sales, indicating **high customer demand and profitability.**
+
+**2. Delivery Speed Directly Impacts Customer Satisfaction**
+  - Orders with faster delivery times tend to receive higher customer ratings, emphasizing the importance of logistics optimization.
+
+**3. Seller Performance Influences Repeat Purchases**
+  - **High-rated sellers** tend to have better sales consistency and repeat customers, highlighting the impact of **customer trust and service quality.**
+
+**4. Review Sentiment Correlates with Product Quality & Service**
+  - Negative reviews often highlight issues in **product quality, delayed deliveries, or poor customer support**, serving as key areas for business improvement.

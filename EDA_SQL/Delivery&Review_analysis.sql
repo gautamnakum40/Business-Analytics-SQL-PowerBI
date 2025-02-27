@@ -36,14 +36,14 @@ where order_status='delivered'
 
 
 --2. FInd out the fastest and the slowest delivery days or time?
---3. Find out the average devlivery time or days ?
+  
+-- For Slowest
 
 select max(order_delivered_customer_date - order_purchase_timestamp) as slowest_delivery from olist_orders
 where order_status= 'delivered'
 ;
 
 -- observation the slowest delivery took 209 days to deliver
-
 
 -- lets also find out which order_id has the slowest delivery
 select *, (order_delivered_customer_date - order_purchase_timestamp) as slowest_delivery from olist_orders
@@ -52,10 +52,12 @@ order by slowest_delivery DESC
 limit 1
 ;
 
+-- For fastest
+
 select min(order_delivered_customer_date - order_purchase_timestamp) as fastest_delivery from olist_orders
 where order_status= 'delivered'
 ;
-
+ 
 --observation fastest delivery time is 12 hours
 
 --lets see which order_id had the fastest delivery
@@ -65,6 +67,11 @@ where order_status= 'delivered' and order_delivered_customer_date is not null
 order by fastest_delivery asc
 limit 1
 ;
+
+
+
+--3. Find out the average devlivery time or days ?
+
 
 select avg(order_delivered_customer_date - order_purchase_timestamp) as average_delivery from olist_orders
 where order_status= 'delivered'

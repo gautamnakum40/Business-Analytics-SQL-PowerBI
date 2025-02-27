@@ -587,8 +587,191 @@ Output
 
 > Insight : average delivery time is 12 days and 13 hours
 
+#### 4. Find the average, max, min difference between the actual delivery and estimated delivery?
+
+``` sql
+-- For AVG
+
+select avg(order_estimated_delivery_date - order_delivered_customer_date) as average_discrepency from olist_orders
+where order_status= 'delivered'
+;
+
+-- For Max
+
+select max(order_estimated_delivery_date - order_delivered_customer_date) as max_discrepency from olist_orders
+where order_status= 'delivered'
+;
+
+- For MIN
+
+select min(order_estimated_delivery_date - order_delivered_customer_date) as min_discrepency from olist_orders
+where order_status= 'delivered'
+```
+
+Output 
+
+For AVG
+
+```{"days": 10,"hours": 28, "minutes": 16, "seconds": 30, "milliseconds": 62.973}```
+
+> Insight : On average product is delivered 10 days before the estimated delivery date.
+
+For Max
+
+```{"max_discrepency": { "days": 146,  "minutes": 23, "seconds": 13}}```
+
+> Insight : A product was delivered 146 days prior to the estimated delivery time.
+
+For MIN
+
+```{ "days": -188,"hours": -23, "minutes": -24,"seconds": -7}```
+
+> Insight : A product was delivered 6 months after the estimated delivery time. Negative days means the product was delivered after the estimated date of delivery.
+
+#### 5. Find out count of all reviews scores and the percentage of review score?
+
+```sql
+with starrating AS
+(
+select review_score, count(order_id) star_ratings from olist_order_reviews
+group by review_score
+order by star_ratings DESC
+)
+,
+total as 
+(
+select count(order_id) as total from olist_order_reviews
+)
+
+select review_score, star_ratings, (star_ratings::float / total) * 100 as percentage_stars
+from starrating, total;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Rating%20Analysis.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Rating%20Analysis.png)
+
+#### 6. Find the relation between delivery time and review score?
+
+-- Checking the Avg score if delivered within first two weeks
+
+```sql
+--find avg_rating we use cte inside cte
 
 
+with avgrating as
+(with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime < INTERVAL '14 days'
+)
+select avg(review_score) from avgrating
+```
+Output 
+
+```{ "avg": "4.3533371570018414"}```
+
+> Insight : f the product is delivered with in 2 weeks the avg rating is 4.35.
+
+-- Checking the Avg score if delivered between 2 and 3 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime between INTERVAL '14 days' and INTERVAL '21 days'
+)
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{ "avg": "4.1396386222473179"}```
+
+> Insight : if the product is delivered with in 2 weeks to 3 weeks the avg rating drops to 4.13.
+
+-- Checking the Avg score if delivered between 3 and 4 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime between INTERVAL '21 days' and INTERVAL '28 days'
+)
+
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{ "avg": "3.6899055918663762"}```
+
+> Insight : if the product is delivered with in 3 weeks to 4 weeks the avg rating drops to 3.6.
+
+-- Checking the Avg score if delivered between 4 and 5 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime  between INTERVAL '28 days' and INTERVAL '35 days'
+)
+
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{ "avg": "2.8450144508670520"}```
+
+> Insight : if the product is delivered with in 4 weeks to 5 weeks the avg rating drops to 2.8.
+
+-- Checking the Avg score if delivered after 5 weeks
+
+```sql
+with avgrating as
+(
+with relation as
+(select ord.order_id, (ord.order_delivered_customer_date - ord.order_purchase_timestamp) as deliverytime,
+orr.review_score
+from olist_orders ord join olist_order_reviews orr on ord.order_id = orr.order_id
+where ord.order_status = 'delivered' and order_delivered_customer_date is not NULL)
+
+select * from relation
+where deliverytime > INTERVAL '35 days'
+
+)
+
+select avg(review_score) from avgrating
+```
+
+Output 
+
+```{"avg": "1.9714912280701754"}```
+
+> Insight : if the product is delivered after 5 weeks the avg rating drops to 1.9
 
 
 

@@ -335,12 +335,85 @@ from 'C:\Users\nakum\OneDrive\Desktop\PROJECTS\Ecommerce\Olist_Dataset\olist_ord
 WITH (FORMAT csv, HEADER true, delimiter ',', encoding 'UTF8');
 ```
 
-### Entity Relationship Diagram (ERD)
+
+## Entity Relationship Diagram (ERD)
 
 This diagram illustrates the relationships between all the tables I have created.
 
+![ERD Diagram](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/ERD.png)
 
+## Exploratory Data Analysis (EDA)
 
+The second objective is to perform Exploratory Data Analysis (EDA) to uncover valuable insights. The analysis is divided into three different approaches based on the data, providing a comprehensive understanding of the overall e-commerce business.
+
+   - Customer and Seller Analysis [SQL File](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/EDA_SQL/Customer%26Seller_analysis.sql)
+   - Delivery and Review Analysis [SQL File](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/EDA_SQL/Delivery%26Review_analysis.sql)
+   - Sales and Revenue Analysis [SQL File](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/EDA_SQL/Sales%26Revenue_analysis.sql)
+
+### **Customer and Seller Analysis**
+
+Questions to be answer for this analysis are as follows:
+
+  1. What are the top 10 cities with most customers?
+  2. What are the top 10 states with most customers?
+  3. Find what top 10 cities come under what states?
+  4. What are the top 10 cities with most selles?
+  5. What are the top 10 states with most selles?
+  6. Find what top 10 cities come under what states?
+  7. Is there any relation between the geography of customers and sellers?
+
+#### 1. What are the top 10 cities with most customers?
+
+```sql
+--we will use customer unique id because we want to get total unique customers
+
+select customer_city, count(customer_unique_id) as number_customers
+from olist_customers
+group by customer_city
+order by number_customers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20customers.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20cities%20with%20most%20customers.png)
+
+Insights
+
+Sao Paulo has the largert customer base for Olist.
+
+#### 2. What are the top 10 states with most customers?
+
+```sql
+select customer_state, count(customer_unique_id) as number_customers
+from olist_customers
+group by customer_state
+order by number_customers DESC
+limit 10;
+```
+
+Visualization [Link](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20customers.png)
+
+![img](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/top%2010%20states%20with%20most%20customers.png)
+
+Insights
+
+State of São Paulo has the largert customer base for Olist.
+
+#### 3. Find what top 10 cities come under what states?
+
+```sql
+with topcities_cust AS
+(SELECT customer_state, customer_city, count(customer_unique_id) as number_customers,
+row_number() over (ORDER BY count(customer_unique_id) desc) as row_num
+from olist_customers
+group by customer_city,customer_state
+)
+select customer_state, customer_city, number_customers
+from topcities_cust
+where row_num<=10
+ORDER BY customer_state, number_customers desc;
+```
 
 
 

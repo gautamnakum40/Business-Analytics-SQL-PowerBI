@@ -915,5 +915,57 @@ Output
 
 > Insight : On average $19.9 frieght charges are there per order.
 
+###  Power BI Dashboard
+
+The Power BI Dashboard aims to provide an interactive and visually compelling analysis of the Olist e-commerce dataset, enabling data-driven decision-making.
 
 
+
+## Executive Summary
+
+### Database design and importing data
+
+This part of the project includes using the schema provide by the Olist dataset to establish the follwing tasks:
+
+  - Using the data in different csv files to import into seperate tables using the given schema.
+  - Creating tables in order so that these relationships can be established and data can be imported in a logical order.
+  - Asigning adequate data types such as int, numeeric, varchar, timestamp etc to the tables so that it is easies to perform functions usch as joins to the tables.
+  - Creating a Entity relationship diagram and then comparing it to the schema provided.
+
+After this part the data is available a form that can be used for exploratory data analysis.
+
+### Exploaratory Data Analysis(EDA)
+
+**This part of the project includes exploring the data using postgre and then visualizing it in PowerBI**.
+
+  - Gaining insights using questions for each segment of this analysis.
+  - Finding the different geographical distribution of customers and sellers.
+  - Analysing sales and revenue as well as product distribution. 
+  - Understanding the delivery timings and its effect on reviews.
+
+**Various SQL techniques are used in order to perform these analysis such as:**
+
+  - Joins are used for different tables to get required results.
+  - CTE common tabke expression is used for table manuplation.
+  - Aggregate functions used such as avg, max, min for analysis.
+  - Subqueries and Group By clauses used with other basic operations like to extract order and filter data.  
+
+**PowerBI for Visualization & Dashboard**
+
+   - Results from sql queries are stores as csv files and used for visualization.
+   - Diffferet charts such as area chart, bar chart, waterfall chart, heatmaps, Stacked area chart and table matrix  are used for interactive visualization.
+   - hese visualizations are integrated into a dynamic Power BI dashboard, providing an intuitive and interactive way to analyze key metrics and trends.
+
+## Key Insights from the Olist E-commerce Analysis
+
+### 1. Top-Performing Product Categories Drive Revenue
+  - Certain product categories contribute significantly to total sales, indicating **high customer demand and profitability.**
+
+### 2. Delivery Speed Directly Impacts Customer Satisfaction
+  - Orders with faster delivery times tend to receive higher customer ratings, emphasizing the importance of logistics optimization.
+
+### 3. Seller Performance Influences Repeat Purchases
+  - **High-rated sellers** tend to have better sales consistency and repeat customers, highlighting the impact of **customer trust and service quality.**
+
+### 4. Review Sentiment Correlates with Product Quality & Service
+  - Negative reviews often highlight issues in **product quality, delayed deliveries, or poor customer support**, serving as key areas for business improvement.

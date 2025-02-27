@@ -27,6 +27,10 @@ After successful data ingestion, SQL queries are used to conduct in-depth Explor
 
 The Power BI Dashboard aims to provide an interactive and visually compelling analysis of the Olist e-commerce dataset, enabling data-driven decision-making.
 
+![overview](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Overview%20dashboard.png)
+
+![order](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/Img/Order%20dashboard.png)
+
 
 ## Dataset
 
@@ -966,8 +970,8 @@ After this part the data is available a form that can be used for exploratory da
   - Aggregate functions used such as avg, max, min for analysis.
   - Subqueries and Group By clauses used with other basic operations like to extract order and filter data.  
 
-**PowerBI for Visualization & Dashboard**
-
+**[PowerBI for Visualization & Dashboard](https://github.com/gautamnakum40/Business-Analytics-SQL-PowerBI/blob/master/PowerBI/Olist_Ecommerce_Dashboard.pbix)**
+   
    - Results from sql queries are stores as csv files and used for visualization.
    - Diffferet charts such as area chart, bar chart, waterfall chart, heatmaps, Stacked area chart and table matrix  are used for interactive visualization.
    - hese visualizations are integrated into a dynamic Power BI dashboard, providing an intuitive and interactive way to analyze key metrics and trends.
